@@ -12,9 +12,9 @@ import (
 )
 
 type Client struct {
-	host     string
-	basePath string
-	client   http.Client
+	host    string
+	apiPath string
+	client  http.Client
 }
 
 const (
@@ -24,19 +24,18 @@ const (
 
 func NewClient(host string, token string) *Client {
 	return &Client{
-		host:     host,
-		basePath: newBasePath(token),
-		client:   http.Client{},
+		host:    host,
+		apiPath: newApiPath(token),
+		client:  http.Client{},
 	}
 }
 
-func newBasePath(token string) string {
+func newApiPath(token string) string {
 	return "bot" + token
 }
 
 func (c *Client) GetUpdates(offset int, limit int) (updates []Update, err error) {
 	q := url.Values{}
-	// (Itoa) Interger to ASCII
 	q.Add("offset", strconv.Itoa(offset))
 	q.Add("limit", strconv.Itoa(limit))
 
@@ -78,7 +77,7 @@ func (c *Client) sendRequest(method string, query url.Values) (data []byte, err 
 	u := url.URL{
 		Scheme: "https",
 		Host:   c.host,
-		Path:   path.Join(c.basePath, method),
+		Path:   path.Join(c.apiPath, method),
 	}
 	req, err := http.NewRequest(http.MethodGet, u.String(), nil)
 	if err != nil {
